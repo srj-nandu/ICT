@@ -339,9 +339,6 @@ def create_user(name: str, email: str, password: str, role: str = "user") -> dic
     ensure_storage()
     name = name.strip()
     email = email.strip().lower()
-    requested_role = role.strip().lower()
-    if requested_role not in {"user", "admin"}:
-        requested_role = "user"
     if len(name) < 2:
         raise ValueError("Please enter your full name.")
     if not EMAIL_RE.fullmatch(email):
@@ -359,7 +356,7 @@ def create_user(name: str, email: str, password: str, role: str = "user") -> dic
         "email": email,
         "password_salt": salt,
         "password_hash": hash_password(password, salt),
-        "role": "admin" if first_user else requested_role,
+        "role": "admin" if first_user else "user",
         "created_at": datetime.now().isoformat(timespec="seconds"),
     }
     try:

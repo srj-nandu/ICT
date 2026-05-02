@@ -104,7 +104,6 @@ def register_routes(app: Any, handlers: dict[str, Any]) -> None:
                 request.form.get("name", ""),
                 request.form.get("email", ""),
                 request.form.get("password", ""),
-                request.form.get("role", "user"),
             )
             handlers["store_current_user"](user)
             return handlers["redirect_with_params"](DASHBOARD_PAGE, {"message": f"Welcome, {user['name']}. Your account is ready.", "kind": "success"})

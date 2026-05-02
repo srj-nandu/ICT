@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{page_title}}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="site-shell header-bar">
+            <a class="brand" href="/templates/dashboard.html">
+                <span class="brand-mark">CV</span>
+                <span>
+                    <strong>Careermitra</strong>
+                    <small>PDF resume analysis</small>
+                </span>
+            </a>
+            <nav class="nav">{{nav_links}}</nav>
+            <div class="header-auth">{{auth_block}}</div>
+        </div>
+    </header>
+
+    <main class="site-shell page-stack">
+        <section class="panel">
+            {{message_block}}
+            <div class="section-headline">
+                <h2>Upload Resume</h2>
+                <p>Choose a PDF resume and one or more job roles. The system combines the role skills, calculates the gap, and saves charts for the result page.</p>
+            </div>
+            <form class="stack-form" action="/templates/upload.html" method="post" enctype="multipart/form-data">
+                <label class="field-label" for="resume">PDF resume</label>
+                <input id="resume" name="resume" class="form-control" type="file" accept="application/pdf,.pdf" required>
+
+                <div>
+                    <label class="field-label">Target job roles</label>
+                    <div class="role-picker">
+                        {{job_role_choices}}
+                    </div>
+                </div>
+
+                <label class="form-check">
+                    <input class="form-check-input" type="checkbox" name="replace_old" value="yes">
+                    <span class="form-check-label">Replace my old uploaded resume files and generated graphs</span>
+                </label>
+
+                <button class="primary-button" type="submit">Analyze Resume</button>
+            </form>
+        </section>
+    </main>
+</body>
+</html>

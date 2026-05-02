@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{page_title}}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="site-shell header-bar">
+            <a class="brand" href="/templates/dashboard.html">
+                <span class="brand-mark">CV</span>
+                <span>
+                    <strong>Careermitra</strong>
+                    <small>Skill Analysis Workspace</small>
+                </span>
+            </a>
+            <nav class="nav">{{nav_links}}</nav>
+            <div class="header-auth">{{auth_block}}</div>
+        </div>
+    </header>
+
+    <main class="site-shell page-stack">
+        <section class="hero-panel hero-dashboard">
+            <div>
+                <p class="eyebrow-text">Dashboard</p>
+                <h1>Welcome back, {{user_name}}</h1>
+                <p class="hero-copy">Manage uploaded resumes, review extracted skill signals, and open generated skill gap reports.</p>
+            </div>
+        </section>
+
+        {{message_block}}
+
+        <section class="stats-grid">
+            <article class="stat-card">
+                <span>Stored resumes</span>
+                <strong>{{records_count}}</strong>
+            </article>
+            <article class="stat-card">
+                <span>Profiles analyzed</span>
+                <strong>{{analyzed_count}}</strong>
+            </article>
+            <article class="stat-card">
+                <span>Structured files</span>
+                <strong>{{structured_files}}</strong>
+            </article>
+            <article class="stat-card">
+                <span>Best match</span>
+                <strong>{{latest_match}}</strong>
+            </article>
+        </section>
+
+        <div class="alert alert-info border-0">{{admin_note}}</div>
+
+        <section class="dashboard-grid">
+            <section class="panel">
+                <div class="panel-heading">
+                    <div>
+                        <h2>Resume Analyzer</h2>
+                        <p>Upload a PDF resume, choose a predefined job role, and generate a skill gap report with charts.</p>
+                    </div>
+                </div>
+                <a class="primary-button" href="/templates/upload.html">Analyze New Resume</a>
+
+                <div class="hint-list">
+                    <div class="hint-card">PDF uploads are parsed with PyMuPDF.</div>
+                    <div class="hint-card">Skill matching uses keyword extraction against stored job roles.</div>
+                    <div class="hint-card">Graphs are generated with Matplotlib and displayed in the result page.</div>
+                </div>
+
+                <div class="skills-board">
+                    <div class="section-headline">
+                        <h3>Skill Snapshot</h3>
+                        <p>Cross-resume frequency from saved analysis files.</p>
+                    </div>
+                    {{skill_totals}}
+                </div>
+            </section>
+
+            <section class="panel">
+                <div class="manager-top">
+                    <div>
+                        <h2>Analysis History</h2>
+                        <p>Review saved PDF analyses and open generated skill gap reports.</p>
+                    </div>
+                    <input id="recordSearch" type="search" placeholder="Search candidate, file, or skill">
+                    <form action="/old-data-delete" method="post">
+                        <input type="hidden" name="return_to" value="/templates/dashboard.html">
+                        <button class="danger compact" type="submit">Delete all history</button>
+                    </form>
+                </div>
+                <div class="table-responsive mb-4">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Resume</th>
+                                <th>Job Role</th>
+                                <th>Match</th>
+                                <th>Uploaded</th>
+                                <th>Result</th>
+                            </tr>
+                        </thead>
+                        <tbody>{{resume_rows}}</tbody>
+                    </table>
+                </div>
+                <form id="bulkSelectionForm" class="bulk-toolbar" action="/bulk-delete" method="post">
+                    <span><strong id="selectedCount">0</strong> selected</span>
+                    <div class="bulk-actions">
+                        <button type="button" class="ghost-button compact" id="selectVisible">Select visible</button>
+                        <button type="button" class="ghost-button compact" id="clearSelection">Clear</button>
+                        <button type="submit" class="danger compact" id="bulkDeleteButton" disabled>Delete selected</button>
+                    </div>
+                </form>
+                <div id="recordList" class="record-list">
+                    {{record_cards}}
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

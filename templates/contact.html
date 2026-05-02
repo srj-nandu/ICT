@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{page_title}}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="site-shell header-bar">
+            <a class="brand" href="/templates/dashboard.html">
+                <span class="brand-mark">CV</span>
+                <span>
+                    <strong>Careermitra</strong>
+                    <small>Support and Collaboration</small>
+                </span>
+            </a>
+            <nav class="nav">{{nav_links}}</nav>
+            <div class="header-auth">{{auth_block}}</div>
+        </div>
+    </header>
+
+    <main class="site-shell page-stack">
+        <section class="hero-panel hero-contact">
+            <div>
+                <p class="eyebrow-text">Contact Us</p>
+                <h1>Let’s talk about your workflow</h1>
+                <p class="hero-copy">Send questions, feature requests, or support notes. Every message is saved in structured JSON so your project communication stays organized too.</p>
+            </div>
+        </section>
+
+        <section class="contact-grid">
+            <section class="panel">
+                {{message_block}}
+                <div class="section-headline">
+                    <h2>Send a message</h2>
+                    <p>We’ll save it locally in the project storage and keep the workflow traceable.</p>
+                </div>
+                <form class="stack-form" action="/templates/contact.html" method="post">
+                    <label class="field-label" for="name">Name</label>
+                    <input id="name" name="name" type="text" value="{{name_value}}" required>
+
+                    <label class="field-label" for="email">Email</label>
+                    <input id="email" name="email" type="email" value="{{email_value}}" required>
+
+                    <label class="field-label" for="subject">Subject</label>
+                    <input id="subject" name="subject" type="text" value="{{subject_value}}" required>
+
+                    <label class="field-label" for="message">Message</label>
+                    <textarea id="message" name="message" rows="7" required>{{message_value}}</textarea>
+
+                    <button class="primary-button" type="submit">Send Message</button>
+                </form>
+            </section>
+
+            <aside class="panel support-panel">
+                <div class="section-headline">
+                    <h2>Other ways we help</h2>
+                    <p>Use this workspace to manage both candidate files and the collaboration around them.</p>
+                </div>
+                <div class="support-list">
+                    <div class="support-card">
+                        <strong>Dashboard support</strong>
+                        <p>Need better record organization or filtering? Send a product request.</p>
+                    </div>
+                    <div class="support-card">
+                        <strong>Analysis questions</strong>
+                        <p>Ask about extraction quality, skill detection, or supported file types.</p>
+                    </div>
+                    <div class="support-card">
+                        <strong>Workflow ideas</strong>
+                        <p>Use the form to suggest admin tools, reports, or export features.</p>
+                    </div>
+                </div>
+            </aside>
+        </section>
+    </main>
+</body>
+</html>

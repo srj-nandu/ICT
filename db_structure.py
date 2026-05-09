@@ -109,8 +109,16 @@ REQUIRED_COLUMNS = (
 )
 
 
-def ensure_column(connection: sqlite3.Connection, table_name: str, column_name: str, definition: str) -> None:
-    columns = [row["name"] for row in connection.execute(f"PRAGMA table_info({table_name})").fetchall()]
+def ensure_column(
+    connection: sqlite3.Connection,
+    table_name: str,
+    column_name: str,
+    definition: str,
+) -> None:
+    columns = [
+        row["name"]
+        for row in connection.execute(f"PRAGMA table_info({table_name})").fetchall()
+    ]
     if column_name not in columns:
         connection.execute(f"ALTER TABLE {table_name} ADD COLUMN {column_name} {definition}")
 

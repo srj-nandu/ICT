@@ -1,6 +1,8 @@
 const searchInput = document.getElementById("recordSearch");
 const cards = Array.from(document.querySelectorAll(".record-card"));
-const recordCheckboxes = Array.from(document.querySelectorAll('.record-card input[type="checkbox"][name="record_ids"]'));
+const recordCheckboxes = Array.from(
+    document.querySelectorAll('.record-card input[type="checkbox"][name="record_ids"]')
+);
 const selectedCount = document.getElementById("selectedCount");
 const bulkDeleteButton = document.getElementById("bulkDeleteButton");
 const selectVisibleButton = document.getElementById("selectVisible");

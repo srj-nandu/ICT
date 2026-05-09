@@ -193,18 +193,36 @@ def extract_text_from_rtf(raw_text: str) -> str:
 def extract_resume_text(file_path: Path) -> tuple[str, str]:
     suffix = file_path.suffix.lower()
     if suffix in {".txt", ".md"}:
-        return compact_text(file_path.read_text(encoding="utf-8", errors="replace")), "Plain text extracted directly from the uploaded file."
+        return (
+            compact_text(file_path.read_text(encoding="utf-8", errors="replace")),
+            "Plain text extracted directly from the uploaded file.",
+        )
     if suffix == ".docx":
         text = extract_text_from_docx(file_path)
-        note = "DOCX text extracted from the document structure." if text else "DOCX uploaded successfully, but no readable text was found."
+        note = (
+            "DOCX text extracted from the document structure."
+            if text
+            else "DOCX uploaded successfully, but no readable text was found."
+        )
         return text, note
     if suffix == ".pdf":
         text = extract_text_from_pdf_bytes(file_path.read_bytes())
-        note = "PDF text recovered with a lightweight parser." if text else "PDF uploaded successfully. Text extraction was limited, so the analysis is metadata-focused."
+        note = (
+            "PDF text recovered with a lightweight parser."
+            if text
+            else (
+                "PDF uploaded successfully. Text extraction was limited, "
+                "so the analysis is metadata-focused."
+            )
+        )
         return text, note
     if suffix == ".rtf":
         text = extract_text_from_rtf(file_path.read_text(encoding="utf-8", errors="replace"))
-        note = "RTF text cleaned into plain text for analysis." if text else "RTF uploaded successfully, but the text could not be normalized."
+        note = (
+            "RTF text cleaned into plain text for analysis."
+            if text
+            else "RTF uploaded successfully, but the text could not be normalized."
+        )
         return text, note
     return "", "File stored successfully. This format is not configured for text extraction."
 
@@ -260,7 +278,10 @@ def analyze_resume(text: str, filename: str, extraction_note: str) -> dict[str, 
     if years_experience:
         summary_bits.append(f"Resume text suggests around {years_experience}+ years of experience.")
     if not summary_bits:
-        summary_bits.append("The resume was stored successfully, but only a limited amount of text was available for skill analysis.")
+        summary_bits.append(
+            "The resume was stored successfully, but only a limited amount "
+            "of text was available for skill analysis."
+        )
     summary_bits.append(extraction_note)
 
     return {
@@ -458,7 +479,11 @@ def analyze_uploaded_resume(
 
     user_upload_root = UPLOADS_ROOT / user["user_id"]
     user_upload_root.mkdir(parents=True, exist_ok=True)
-    stored_filename = f"{datetime.now().strftime('%Y%m%d%H%M%S')}-{uuid.uuid4().hex[:8]}-{secure_filename(original_filename)}"
+    stored_filename = (
+        f"{datetime.now().strftime('%Y%m%d%H%M%S')}-"
+        f"{uuid.uuid4().hex[:8]}-"
+        f"{secure_filename(original_filename)}"
+    )
     file_path = user_upload_root / stored_filename
     text_path = user_upload_root / f"{Path(stored_filename).stem}.txt"
 
@@ -468,7 +493,10 @@ def analyze_uploaded_resume(
         text_path.write_text(extracted_text, encoding="utf-8")
         extracted_skills = extract_skills_from_text(extracted_text)
         if not extracted_skills:
-            raise ValueError("No known skills were detected in this resume. Please upload a resume with clearer skill details.")
+            raise ValueError(
+                "No known skills were detected in this resume. "
+                "Please upload a resume with clearer skill details."
+            )
 
         gap = calculate_skill_gap(extracted_skills, required_skills)
         graph_match_path, graph_missing_path = save_analysis_graphs(
@@ -593,7 +621,10 @@ def render_record_cards(records: list[dict[str, Any]]) -> str:
         return """
         <section class="empty-state">
             <h3>No resumes stored yet</h3>
-            <p>Upload a TXT, DOCX, PDF, or RTF resume to generate structured metadata, extracted text, and a skills overview.</p>
+            <p>
+                Upload a TXT, DOCX, PDF, or RTF resume to generate structured
+                metadata, extracted text, and a skills overview.
+            </p>
         </section>
         """
 
@@ -605,7 +636,12 @@ def render_record_cards(records: list[dict[str, Any]]) -> str:
         if not tags:
             tags = '<span class="tag muted">Awaiting stronger text signals</span>'
 
-        experience = f"{analysis.get('years_experience')}+ years" if analysis.get("years_experience") else "Not detected"
+        years_experience = analysis.get("years_experience")
+        experience = f"{years_experience}+ years" if years_experience else "Not detected"
+        record_id = html.escape(record.get("record_id", ""), quote=True)
+        original_filename = html.escape(record.get("original_filename", ""))
+        size_display = html.escape(record.get("size_display", ""))
+        analysis_mode = html.escape(analysis.get("analysis_mode", "Metadata-focused"))
         searchable_text = " ".join(
             [
                 record.get("candidate_name", ""),
@@ -619,7 +655,7 @@ def render_record_cards(records: list[dict[str, Any]]) -> str:
             <article class="record-card" data-search="{html.escape(searchable_text)}">
                 <div class="card-top">
                     <label class="record-select">
-                        <input type="checkbox" name="record_ids" value="{html.escape(record.get("record_id", ""))}" form="bulkSelectionForm">
+                        <input type="checkbox" name="record_ids" value="{record_id}" form="bulkSelectionForm">
                         <span>
                             <p class="eyebrow">{html.escape(record.get("created_display", ""))}</p>
                             <h3>{html.escape(record.get("candidate_name", "Unknown Candidate"))}</h3>
@@ -630,11 +666,11 @@ def render_record_cards(records: list[dict[str, Any]]) -> str:
                         <span class="score">{analysis.get("confidence_score", 0)}% match confidence</span>
                     </div>
                 </div>
-                <p class="file-line">{html.escape(record.get("original_filename", ""))} &middot; {html.escape(record.get("size_display", ""))}</p>
+                <p class="file-line">{original_filename} &middot; {size_display}</p>
                 <p class="summary">{html.escape(analysis.get("summary", ""))}</p>
                 <div class="tag-wrap">{tags}</div>
                 <div class="info-grid">
-                    <div><span>Mode</span><strong>{html.escape(analysis.get("analysis_mode", "Metadata-focused"))}</strong></div>
+                    <div><span>Mode</span><strong>{analysis_mode}</strong></div>
                     <div><span>Words</span><strong>{analysis.get("word_count", 0)}</strong></div>
                     <div><span>Email</span><strong>{html.escape(analysis.get("email") or "Not found")}</strong></div>
                     <div><span>Experience</span><strong>{html.escape(experience)}</strong></div>
@@ -661,10 +697,11 @@ def render_job_role_choices(selected_ids: list[str] | None = None) -> str:
     for role in list_job_roles():
         checked = " checked" if role["job_role_id"] in selected else ""
         skills = html.escape(role.get("skills") or "")
+        role_id = html.escape(role["job_role_id"], quote=True)
         choices.append(
             f"""
             <label class="role-check">
-                <input type="checkbox" name="job_role_ids" value="{html.escape(role["job_role_id"], quote=True)}"{checked}>
+                <input type="checkbox" name="job_role_ids" value="{role_id}"{checked}>
                 <span>
                     <strong>{html.escape(role["title"])}</strong>
                     <small>{skills}</small>
@@ -680,9 +717,11 @@ def render_resume_rows(resumes: list[dict[str, Any]]) -> str:
         return '<tr><td colspan="5" class="text-center text-muted py-4">No resumes uploaded yet.</td></tr>'
     rows: list[str] = []
     for resume in resumes:
+        result_id = resume.get("result_id", "")
+        result_url = f"{RESULT_PAGE}/{html.escape(result_id)}"
         result_link = (
-            f'<a class="btn btn-sm btn-outline-success" href="{RESULT_PAGE}/{html.escape(resume["result_id"])}">Open result</a>'
-            if resume.get("result_id")
+            f'<a class="btn btn-sm btn-outline-success" href="{result_url}">Open result</a>'
+            if result_id
             else '<span class="text-muted">Pending</span>'
         )
         delete_form = f"""
@@ -732,14 +771,22 @@ def dashboard_context(user: dict[str, Any], message: str = "", kind: str = "succ
         "top_skill_label": top_skill_label,
         "latest_match": f"{latest_match:g}%",
         "resume_rows": render_resume_rows(resumes),
-        "admin_note": "Admin view: showing all uploaded resumes." if include_all else "User view: showing your uploaded resumes.",
+        "admin_note": (
+            "Admin view: showing all uploaded resumes."
+            if include_all
+            else "User view: showing your uploaded resumes."
+        ),
         "skill_totals": render_skill_totals(records),
         "record_cards": render_record_cards(records),
         "user_name": html.escape(user.get("name", "Member")),
     }
 
 
-def login_context(message: str = "", kind: str = "success", email: str = "") -> dict[str, Any]:
+def login_context(
+    message: str = "",
+    kind: str = "success",
+    email: str = "",
+) -> dict[str, Any]:
     return {
         "page_title": "Login | Careermitra",
         "nav_links": nav_links("login", False),
@@ -749,7 +796,12 @@ def login_context(message: str = "", kind: str = "success", email: str = "") -> 
     }
 
 
-def register_context(message: str = "", kind: str = "success", name: str = "", email: str = "") -> dict[str, Any]:
+def register_context(
+    message: str = "",
+    kind: str = "success",
+    name: str = "",
+    email: str = "",
+) -> dict[str, Any]:
     return {
         "page_title": "Register | Careermitra",
         "nav_links": nav_links("register", False),
@@ -760,7 +812,11 @@ def register_context(message: str = "", kind: str = "success", name: str = "", e
     }
 
 
-def home_context(user: dict[str, Any] | None, message: str = "", kind: str = "success") -> dict[str, Any]:
+def home_context(
+    user: dict[str, Any] | None,
+    message: str = "",
+    kind: str = "success",
+) -> dict[str, Any]:
     return {
         "page_title": "Home | Careermitra",
         "nav_links": nav_links("home", user is not None),
@@ -771,7 +827,11 @@ def home_context(user: dict[str, Any] | None, message: str = "", kind: str = "su
     }
 
 
-def upload_context(user: dict[str, Any], message: str = "", kind: str = "success") -> dict[str, Any]:
+def upload_context(
+    user: dict[str, Any],
+    message: str = "",
+    kind: str = "success",
+) -> dict[str, Any]:
     return {
         "page_title": "Upload Resume | Careermitra",
         "nav_links": nav_links("upload", True),
@@ -781,7 +841,11 @@ def upload_context(user: dict[str, Any], message: str = "", kind: str = "success
     }
 
 
-def profile_context(user: dict[str, Any], message: str = "", kind: str = "success") -> dict[str, Any]:
+def profile_context(
+    user: dict[str, Any],
+    message: str = "",
+    kind: str = "success",
+) -> dict[str, Any]:
     profile = get_user_profile(user["user_id"])
     resumes = list_user_resumes(user["user_id"])
     return {
@@ -799,7 +863,12 @@ def profile_context(user: dict[str, Any], message: str = "", kind: str = "succes
     }
 
 
-def result_context(user: dict[str, Any], result_id: str, message: str = "", kind: str = "success") -> dict[str, Any]:
+def result_context(
+    user: dict[str, Any],
+    result_id: str,
+    message: str = "",
+    kind: str = "success",
+) -> dict[str, Any]:
     result = get_analysis_result(result_id, user["user_id"], user.get("role") == "admin")
     return {
         "page_title": "Analysis Result | Careermitra",
@@ -810,7 +879,10 @@ def result_context(user: dict[str, Any], result_id: str, message: str = "", kind
         "resume_filename": html.escape(result.get("original_filename", "")),
         "job_role_title": html.escape(result.get("job_role_title", "")),
         "match_percentage": f"{float(result.get('match_percentage', 0)):g}%",
-        "extracted_skills": ", ".join(html.escape(skill) for skill in result.get("extracted_skills", [])) or "None detected",
+        "extracted_skills": (
+            ", ".join(html.escape(skill) for skill in result.get("extracted_skills", []))
+            or "None detected"
+        ),
         "matched_skills": ", ".join(html.escape(skill) for skill in result.get("matched_skills", [])) or "None",
         "missing_skill_badges": render_missing_skill_badges(result.get("missing_skills", [])),
         "graph_match_url": html.escape(result.get("graph_match_url", "")),
@@ -819,7 +891,12 @@ def result_context(user: dict[str, Any], result_id: str, message: str = "", kind
     }
 
 
-def contact_context(user: dict[str, Any] | None, message: str = "", kind: str = "success", form_data: dict[str, str] | None = None) -> dict[str, Any]:
+def contact_context(
+    user: dict[str, Any] | None,
+    message: str = "",
+    kind: str = "success",
+    form_data: dict[str, str] | None = None,
+) -> dict[str, Any]:
     form_data = form_data or {}
     default_name = user.get("name", "") if user else ""
     default_email = user.get("email", "") if user else ""
@@ -863,7 +940,12 @@ def build_register_page(message: str = "", kind: str = "success", name: str = ""
     return render_template("register.html", register_context(message, kind, name, email))
 
 
-def build_contact_page(user: dict[str, Any] | None, message: str = "", kind: str = "success", form_data: dict[str, str] | None = None) -> str:
+def build_contact_page(
+    user: dict[str, Any] | None,
+    message: str = "",
+    kind: str = "success",
+    form_data: dict[str, str] | None = None,
+) -> str:
     return render_template("contact.html", contact_context(user, message, kind, form_data))
 
 
@@ -926,7 +1008,14 @@ def resolve_download_file(record_id: str, kind: str) -> Path:
         "metadata": target_dir / "metadata.json",
     }
     if kind == "source":
-        candidates = sorted([path for path in target_dir.iterdir() if path.is_file() and path.name.startswith("original")], key=lambda item: item.name)
+        candidates = sorted(
+            [
+                path
+                for path in target_dir.iterdir()
+                if path.is_file() and path.name.startswith("original")
+            ],
+            key=lambda item: item.name,
+        )
         file_path = candidates[0] if candidates else None
     else:
         file_path = mapping.get(kind)

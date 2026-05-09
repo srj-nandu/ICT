@@ -62,11 +62,25 @@ ROLE_SKILLS = {
     },
     "Chef": {
         "description": "Plans and prepares food while maintaining kitchen standards and hygiene.",
-        "skills": ["food preparation", "menu planning", "hygiene", "inventory management", "team leadership", "customer service"],
+        "skills": [
+            "food preparation",
+            "menu planning",
+            "hygiene",
+            "inventory management",
+            "team leadership",
+            "customer service",
+        ],
     },
     "Restaurant Manager": {
         "description": "Oversees restaurant operations, staff coordination, and guest satisfaction.",
-        "skills": ["customer service", "inventory management", "team leadership", "cash handling", "communication", "problem solving"],
+        "skills": [
+            "customer service",
+            "inventory management",
+            "team leadership",
+            "cash handling",
+            "communication",
+            "problem solving",
+        ],
     },
     "Sales Executive": {
         "description": "Drives sales through lead generation, relationship building, and follow-ups.",

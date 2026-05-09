@@ -701,19 +701,6 @@ textarea:focus {
     padding: 22px 8px;
 }
 
-.auth-benefits {
-    display: grid;
-    gap: 12px;
-    margin-top: 24px;
-}
-
-.benefit-card {
-    padding: 16px 18px;
-    border-radius: var(--radius-md);
-    background: rgba(255, 255, 255, 0.62);
-    border: 1px solid rgba(31, 41, 51, 0.08);
-}
-
 .auth-card {
     max-width: 520px;
     justify-self: end;
@@ -1217,7 +1204,6 @@ video {
 .stat-card,
 .support-card,
 .hint-card,
-.benefit-card,
 .upload-drop,
 .preview-window {
     max-width: 100%;
@@ -1347,10 +1333,6 @@ video {
 
     .auth-hero {
         padding: 0;
-    }
-
-    .auth-benefits {
-        margin-top: 16px;
     }
 
     .manager-top {
